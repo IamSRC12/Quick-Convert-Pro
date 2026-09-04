@@ -1,0 +1,16 @@
+Last updated: 2026-08-14T14:55:08
+
+Files (10):
+  Analysis-00.toc
+  EXE-00.toc
+  PKG-00.toc
+  PYZ-00.pyz
+  PYZ-00.toc
+  QuickConvertPro.pkg
+  base_library.zip
+  code.txt
+  warn-QuickConvertPro.txt
+  xref-QuickConvertPro.html
+
+Subdirectories (1):
+  localpycs

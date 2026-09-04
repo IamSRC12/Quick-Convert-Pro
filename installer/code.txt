@@ -1,0 +1,9 @@
+Last updated: 2026-08-14T14:55:14
+
+Files (3):
+  build_installer.py
+  code.txt
+  windows_installer.nsi
+
+Subdirectories (0):
+  (none)

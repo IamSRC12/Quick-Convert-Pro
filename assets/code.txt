@@ -1,0 +1,12 @@
+Last updated: 2026-08-14T14:55:08
+
+Files (6):
+  code.txt
+  error.png
+  generate_assets.py
+  icon.ico
+  icon.png
+  success.png
+
+Subdirectories (1):
+  __pycache__

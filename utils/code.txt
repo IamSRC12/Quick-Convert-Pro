@@ -1,0 +1,12 @@
+Last updated: 2026-08-14T14:55:14
+
+Files (6):
+  code.txt
+  file_detector.py
+  logger.py
+  progress_tracker.py
+  queue_manager.py
+  settings_manager.py
+
+Subdirectories (1):
+  __pycache__
