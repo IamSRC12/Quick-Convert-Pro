@@ -15,6 +15,15 @@
 
 Batch file converter for **video, audio, image and data** formats. Ships as a **desktop app (Electron)** and a **web app**, plus a CLI, all backed by `ffmpeg` for media and built-in logic for `json`/`csv`/`txt`.
 
+## 📥 Download
+
+Grab the latest Windows build from the [**Releases**](https://github.com/IamSRC12/Quick-Convert-Pro/releases) page:
+
+- **Quick Convert Pro Setup 2.0.0.exe** — installer (Start Menu / desktop shortcuts)
+- **Quick Convert Pro 2.0.0.exe** — portable, no install
+
+Both bundle `ffmpeg` — nothing else to install.
+
 ## ✨ Features
 
 - Desktop app for Windows (installer + portable `.exe`), with `ffmpeg` bundled
