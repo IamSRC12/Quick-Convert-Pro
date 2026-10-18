@@ -105,6 +105,15 @@ const server = http.createServer(async (req, res) => {
   });
 });
 
+server.on('error', (err) => {
+  if (err.code === 'EADDRINUSE') {
+    console.log(`Port ${PORT} is already in use - Quick Convert Pro is probably already running.`);
+    console.log(`Open http://localhost:${PORT}`);
+    process.exit(0);
+  }
+  throw err;
+});
+
 server.listen(PORT, () => {
   console.log(`Quick Convert Pro running -> http://localhost:${PORT}`);
 });
