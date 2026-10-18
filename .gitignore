@@ -1,6 +1,6 @@
 node_modules/
 dist/
-.next/
+next/
 *.zip
 .env.local
 .env
@@ -8,4 +8,6 @@ dist/
 venv/
 __pycache__/
 *.pyc
+.uploads/
+output/
 

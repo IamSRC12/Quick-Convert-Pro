@@ -1,0 +1,15 @@
+{
+  "name": "quick-convert-pro",
+  "version": "2.0.0",
+  "description": "Batch file converter for video, audio, image and data formats, powered by ffmpeg.",
+  "main": "server.js",
+  "type": "commonjs",
+  "scripts": {
+    "dev": "node server.js",
+    "start": "node server.js",
+    "convert": "node cli.js",
+    "test": "node selftest.js"
+  },
+  "author": "Shlok Chandak (@IamSRC12)",
+  "license": "UNLICENSED"
+}
