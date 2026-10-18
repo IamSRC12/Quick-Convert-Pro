@@ -2,14 +2,49 @@
   "name": "quick-convert-pro",
   "version": "2.0.0",
   "description": "Batch file converter for video, audio, image and data formats, powered by ffmpeg.",
-  "main": "server.js",
+  "main": "electron/main.js",
   "type": "commonjs",
   "scripts": {
-    "dev": "node server.js",
-    "start": "node server.js",
+    "start": "electron .",
+    "dev": "electron .",
+    "web": "node server.js",
     "convert": "node cli.js",
-    "test": "node selftest.js"
+    "test": "node selftest.js",
+    "pack": "node scripts/prepare-ffmpeg.js && electron-builder --dir",
+    "dist": "node scripts/prepare-ffmpeg.js && electron-builder"
   },
   "author": "Shlok Chandak (@IamSRC12)",
-  "license": "UNLICENSED"
+  "license": "UNLICENSED",
+  "devDependencies": {
+    "electron": "^30.5.1",
+    "electron-builder": "^24.13.3"
+  },
+  "build": {
+    "appId": "com.iamsrc.quickconvertpro",
+    "productName": "Quick Convert Pro",
+    "files": [
+      "electron/**/*",
+      "lib/**/*",
+      "public/**/*",
+      "server.js",
+      "package.json"
+    ],
+    "extraResources": [
+      { "from": "resources/bin", "to": "bin", "filter": ["**/*"] }
+    ],
+    "win": {
+      "target": ["nsis", "portable"],
+      "icon": "build/icon.png"
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true,
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true,
+      "shortcutName": "Quick Convert Pro"
+    },
+    "directories": {
+      "output": "dist"
+    }
+  }
 }

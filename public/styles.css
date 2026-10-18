@@ -11,11 +11,31 @@
   --primary: #5e6ad2;
   --primary-hover: #828fff;
   --primary-focus: #5e69d1;
+  --on-primary: #ffffff;
   --ok: #27a644;
   --fail: #e5484d;
   --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   --font-mono: ui-monospace, SFMono-Regular, 'SF Mono', Menlo, Consolas, monospace;
   --t: 0.15s ease;
+}
+
+/* ─── Golden light theme ─────────────────────────────────────────────────────── */
+[data-theme="light"] {
+  --canvas: #fbf7ed;
+  --surface-1: #ffffff;
+  --surface-2: #f6efdd;
+  --surface-3: #eee4cd;
+  --hairline: #e7dcc3;
+  --hairline-strong: #d6c69f;
+  --ink: #241d10;
+  --ink-muted: #4f4632;
+  --ink-subtle: #8a7c5f;
+  --primary: #b8860b;
+  --primary-hover: #9c7209;
+  --primary-focus: #c99a2e;
+  --on-primary: #fffdf5;
+  --ok: #2e7d32;
+  --fail: #c0392b;
 }
 
 * { box-sizing: border-box; }
@@ -27,6 +47,7 @@ body {
   color: var(--ink);
   min-height: 100vh;
   -webkit-font-smoothing: antialiased;
+  transition: background var(--t), color var(--t);
 }
 
 header {
@@ -37,6 +58,7 @@ header {
   gap: 14px;
   align-items: center;
 }
+.head-text { flex: 1; min-width: 0; }
 
 .logo {
   width: 40px;
@@ -47,12 +69,30 @@ header {
   background: var(--primary);
   font-weight: 600;
   font-size: 15px;
-  color: #fff;
+  color: var(--on-primary);
   flex-shrink: 0;
 }
 
 h1 { margin: 0; font-size: 20px; font-weight: 600; letter-spacing: -0.3px; }
 header p { margin: 3px 0 0; color: var(--ink-subtle); font-size: 13px; }
+
+.theme-toggle {
+  display: inline-grid;
+  place-items: center;
+  width: 34px;
+  height: 34px;
+  border-radius: 8px;
+  border: 1px solid var(--hairline);
+  background: var(--surface-1);
+  color: var(--ink-muted);
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: border-color var(--t), color var(--t), background var(--t);
+}
+.theme-toggle:hover { border-color: var(--hairline-strong); color: var(--ink); }
+.theme-toggle .ico-sun { display: none; }
+[data-theme="dark"] .theme-toggle .ico-sun { display: block; }
+[data-theme="dark"] .theme-toggle .ico-moon { display: none; }
 
 main { max-width: 760px; margin: 0 auto; padding: 16px 24px 64px; }
 
@@ -63,8 +103,8 @@ main { max-width: 760px; margin: 0 auto; padding: 16px 24px 64px; }
   background: var(--surface-1);
   cursor: pointer;
   transition: border-color var(--t), background var(--t);
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04);
 }
+[data-theme="dark"] .drop { box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04); }
 .drop:hover, .drop.drag { border-color: var(--primary); background: var(--surface-2); }
 .drop-inner { padding: 48px 24px; text-align: center; }
 .drop-icon { font-size: 28px; color: var(--primary-hover); }
@@ -76,9 +116,10 @@ main { max-width: 760px; margin: 0 auto; padding: 16px 24px 64px; }
   display: flex; align-items: center; gap: 12px; flex-wrap: wrap;
   background: var(--surface-1); border: 1px solid var(--hairline); border-radius: 12px;
   padding: 12px 16px; margin-bottom: 8px;
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04);
+  transition: border-color var(--t);
   animation: fadeIn 0.22s ease forwards;
 }
+[data-theme="dark"] .list li { box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04); }
 .list .name { flex: 1; min-width: 140px; font-size: 14px; font-weight: 500; word-break: break-all; }
 .list .name small { display: block; color: var(--ink-subtle); font-weight: 400; font-size: 12px; margin-top: 2px; }
 
@@ -93,9 +134,9 @@ select, button {
   font-family: inherit; cursor: pointer; transition: border-color var(--t), background var(--t), color var(--t);
 }
 select:hover { border-color: var(--hairline-strong); }
-select:focus-visible, button:focus-visible { outline: none; border-color: var(--primary-focus); box-shadow: 0 0 0 2px rgba(94, 105, 209, 0.5); }
+select:focus-visible, button:focus-visible { outline: none; border-color: var(--primary-focus); box-shadow: 0 0 0 2px color-mix(in srgb, var(--primary-focus) 50%, transparent); }
 
-button.primary { background: var(--primary); color: #fff; border-color: transparent; }
+button.primary { background: var(--primary); color: var(--on-primary); border-color: transparent; }
 button.primary:hover { background: var(--primary-hover); }
 button.primary:active { background: var(--primary-focus); }
 button:disabled { opacity: 0.5; cursor: default; }
@@ -105,6 +146,37 @@ button:disabled { opacity: 0.5; cursor: default; }
 .status.fail { color: var(--fail); }
 a.dl { color: var(--primary-hover); font-size: 13px; font-weight: 500; text-decoration: none; transition: color var(--t); }
 a.dl:hover { color: var(--ink); }
+
+/* ─── Progress bar ───────────────────────────────────────────────────────────── */
+.progress {
+  flex-basis: 100%;
+  height: 5px;
+  border-radius: 9999px;
+  background: var(--surface-3);
+  overflow: hidden;
+  opacity: 0;
+  max-height: 0;
+  transition: opacity var(--t), max-height var(--t);
+}
+.progress.active { opacity: 1; max-height: 5px; margin-top: 4px; }
+.progress-fill {
+  height: 100%;
+  width: 0%;
+  border-radius: 9999px;
+  background: var(--primary);
+  transition: width 0.25s ease;
+}
+.progress.done .progress-fill { background: var(--ok); }
+.progress.failed .progress-fill { background: var(--fail); }
+.progress.indeterminate .progress-fill {
+  width: 35% !important;
+  transition: none;
+  animation: slide 1.1s ease-in-out infinite;
+}
+@keyframes slide {
+  0% { margin-left: -35%; }
+  100% { margin-left: 100%; }
+}
 
 .history { margin-top: 48px; border-top: 1px solid var(--hairline); padding-top: 24px; }
 .history h2 {

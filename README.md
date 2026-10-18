@@ -3,6 +3,7 @@
 <p align="center">
   <img alt="Node.js" src="https://img.shields.io/badge/Node.js-339933?style=flat-square&logo=nodedotjs&logoColor=white" />
   <img alt="FFmpeg" src="https://img.shields.io/badge/FFmpeg-007808?style=flat-square&logo=ffmpeg&logoColor=white" />
+  <img alt="Electron" src="https://img.shields.io/badge/Electron-47848F?style=flat-square&logo=electron&logoColor=white" />
   <img alt="JavaScript" src="https://img.shields.io/badge/JavaScript-F7DF1E?style=flat-square&logo=javascript&logoColor=black" />
 </p>
 
@@ -12,11 +13,14 @@
 
 ## Overview
 
-Batch file converter for **video, audio, image and data** formats. A web UI plus a CLI, both backed by `ffmpeg` for media and built-in logic for `json`/`csv`/`txt`.
+Batch file converter for **video, audio, image and data** formats. Ships as a **desktop app (Electron)** and a **web app**, plus a CLI, all backed by `ffmpeg` for media and built-in logic for `json`/`csv`/`txt`.
 
 ## ✨ Features
 
-- Batch conversion from the browser (drag many files at once)
+- Desktop app for Windows (installer + portable `.exe`), with `ffmpeg` bundled
+- Batch conversion — drag many files at once
+- Live **progress bar** per file (upload + conversion) with speed-tuned encodes
+- **Light / dark theme** (warm golden light, near-black dark)
 - Video, audio and image conversion via `ffmpeg`
 - Video → audio extraction and video → GIF
 - `json` ⇄ `csv` ⇄ `txt` conversion without any external tool
@@ -24,28 +28,35 @@ Batch file converter for **video, audio, image and data** formats. A web UI plus
 
 ## 🚀 Getting Started
 
-Requires **Node.js 18+** and **ffmpeg** on your `PATH`.
+Requires **Node.js 18+**. `ffmpeg` must be on your `PATH` for source runs (it is bundled inside the packaged app).
 
 ```bash
-npm install          # no dependencies, just initialises
-npm start            # web UI on http://localhost:5173
-# or use the CLI:
+npm install
+npm start            # launch the desktop app
+npm run web          # or: web UI on http://localhost:5173
+npm run dist         # build the Windows installer + portable exe (dist/)
+# CLI:
 node cli.js video.mp4 mp3
 node cli.js ./myfolder png ./out
 ```
 
-Windows one-click: **`START.bat`**.
+Windows one-click web launch: **`START.bat`**.
 
 ## 📁 Project Structure
 
 ```
 Quick-Convert-Pro/
 ├── lib/
-│   └── convert.js       # format rules, ffmpeg args, text conversion
+│   └── convert.js        # format rules, ffmpeg args (async + progress), text conversion
 ├── public/               # web UI (index.html, app.js, styles.css)
-├── server.js            # HTTP server + /api/convert
-├── cli.js               # command-line interface
-├── selftest.js          # conversion logic self-test
+├── electron/
+│   └── main.js           # desktop entry point
+├── scripts/
+│   └── prepare-ffmpeg.js # bundles ffmpeg/ffprobe for packaging
+├── build/icon.png        # app icon
+├── server.js             # HTTP server + streaming /api/convert
+├── cli.js                # command-line interface
+├── selftest.js           # conversion logic self-test
 └── START.bat
 ```
 

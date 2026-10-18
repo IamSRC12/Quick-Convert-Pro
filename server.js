@@ -6,8 +6,11 @@ const { extOf, targetsFor, convertFile } = require('./lib/convert');
 
 const ROOT = __dirname;
 const PUBLIC = path.join(ROOT, 'public');
-const UPLOADS = path.join(ROOT, '.uploads');
-const OUTPUT = path.join(ROOT, 'output');
+// Writable location for uploads/output. Overridden by the desktop app so it can
+// write to userData instead of the read-only app package.
+const DATA_DIR = process.env.QCP_DATA_DIR || ROOT;
+const UPLOADS = path.join(DATA_DIR, '.uploads');
+const OUTPUT = path.join(DATA_DIR, 'output');
 const PORT = process.env.PORT || 5173;
 
 for (const dir of [UPLOADS, OUTPUT]) fs.mkdirSync(dir, { recursive: true });
@@ -49,27 +52,37 @@ const server = http.createServer(async (req, res) => {
   }
 
   if (req.method === 'POST' && url.pathname === '/api/convert') {
-    try {
-      const filename = decodeURIComponent(req.headers['x-filename'] || 'file');
-      const target = String(req.headers['x-target'] || '').toLowerCase();
-      if (!target) return json(res, 400, { ok: false, error: 'Missing X-Target header' });
-      const body = await readBody(req);
-      if (!body.length) return json(res, 400, { ok: false, error: 'Empty upload' });
+    const filename = decodeURIComponent(req.headers['x-filename'] || 'file');
+    const target = String(req.headers['x-target'] || '').toLowerCase();
+    const body = await readBody(req);
 
+    if (!target || !body.length) {
+      return json(res, 400, { ok: false, error: !target ? 'Missing X-Target header' : 'Empty upload' });
+    }
+
+    // Stream newline-delimited JSON: progress lines, then one final "done" line.
+    res.writeHead(200, { 'Content-Type': 'application/x-ndjson; charset=utf-8', 'Cache-Control': 'no-cache' });
+    const send = (obj) => res.write(JSON.stringify(obj) + '\n');
+
+    let input = null;
+    try {
       const inExt = extOf(filename) || 'bin';
       const id = crypto.randomBytes(6).toString('hex');
-      const input = path.join(UPLOADS, `${id}.${inExt}`);
+      input = path.join(UPLOADS, `${id}.${inExt}`);
       fs.writeFileSync(input, body);
 
-      const outPath = convertFile(input, target, OUTPUT);
+      send({ type: 'progress', percent: 0 });
+      const outPath = await convertFile(input, target, OUTPUT, (percent) => send({ type: 'progress', percent }));
       const outName = path.basename(outPath);
-      fs.unlinkSync(input);
 
       const entry = { from: filename, to: outName, size: fs.statSync(outPath).size, at: new Date().toISOString() };
       history.push(entry);
-      json(res, 200, { ok: true, url: `/download/${encodeURIComponent(outName)}`, ...entry });
+      send({ type: 'done', ok: true, url: `/download/${encodeURIComponent(outName)}`, ...entry });
     } catch (err) {
-      json(res, 500, { ok: false, error: err.message });
+      send({ type: 'done', ok: false, error: err.message });
+    } finally {
+      if (input) { try { fs.unlinkSync(input); } catch {} }
+      res.end();
     }
     return;
   }
@@ -105,15 +118,24 @@ const server = http.createServer(async (req, res) => {
   });
 });
 
-server.on('error', (err) => {
-  if (err.code === 'EADDRINUSE') {
-    console.log(`Port ${PORT} is already in use - Quick Convert Pro is probably already running.`);
-    console.log(`Open http://localhost:${PORT}`);
-    process.exit(0);
-  }
-  throw err;
-});
+function start(port = PORT) {
+  return new Promise((resolve, reject) => {
+    server.once('error', reject);
+    server.listen(port, () => resolve(server.address().port));
+  });
+}
 
-server.listen(PORT, () => {
-  console.log(`Quick Convert Pro running -> http://localhost:${PORT}`);
-});
+module.exports = { start, server };
+
+if (require.main === module) {
+  start()
+    .then((port) => console.log(`Quick Convert Pro running -> http://localhost:${port}`))
+    .catch((err) => {
+      if (err.code === 'EADDRINUSE') {
+        console.log(`Port ${PORT} is already in use - Quick Convert Pro is probably already running.`);
+        console.log(`Open http://localhost:${PORT}`);
+        process.exit(0);
+      }
+      throw err;
+    });
+}

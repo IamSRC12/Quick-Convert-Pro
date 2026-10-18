@@ -10,4 +10,6 @@ __pycache__/
 *.pyc
 .uploads/
 output/
+resources/bin/*
+!resources/bin/.gitkeep
 
